@@ -7,7 +7,7 @@ Bài toán: phân loại một bình luận tiếng Việt thành **Negative / N
 1. **Notebook `Midterm.ipynb`**: tạo dataset bằng LLM, so sánh nhiều cách biểu diễn văn bản và nhiều mô hình ML/DL.
 2. **Web demo** (FastAPI + SQLite + HTML): cho người dùng xem dataset và thử 3 mô hình tốt nhất.
 
-Demo trực tuyến: _(dán link Render vào đây)_. Gói miễn phí tự ngủ khi không có người dùng, lần mở đầu có thể mất khoảng 1 phút.
+Demo trực tuyến: _(dán link Render vào đây)_. Gói miễn phí Render tự ngủ khi không có người dùng, lần mở đầu có thể mất khoảng 1 phút.
 
 ---
 
