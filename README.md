@@ -1,7 +1,6 @@
 # Phân loại cảm xúc bình luận tiếng Việt: so sánh Bag of Words, Doc2Vec và Deep Learning
 
 Dự án giữa kỳ môn **Nhập môn Xử lý ngôn ngữ tự nhiên**.
-Nhóm thực hiện: _(điền tên các thành viên)_
 
 Bài toán: phân loại một bình luận tiếng Việt thành **Negative / Neutral / Positive**. Dự án gồm hai phần:
 
