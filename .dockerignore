@@ -1,0 +1,6 @@
+__pycache__
+*.log
+data/app.db
+*.ipynb
+assets
+.git

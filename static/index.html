@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phân loại cảm xúc bình luận tiếng Việt</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#edf0f3;--panel:#fff;--ink:#16233b;--mute:#5b6779;--line:#d5dbe3;--neg:#b42318;--neu:#6b7280;--pos:#12795a;
+--negbg:#fbeceb;--neubg:#eef0f3;--posbg:#e6f4ee}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 "Be Vietnam Pro",system-ui,sans-serif}
+header,main,footer{max-width:1180px;margin:0 auto;padding:0 20px}
+header{padding-top:32px;padding-bottom:20px}
+h1{font-size:clamp(1.5rem,3.2vw,2.1rem);line-height:1.2;margin:0 0 6px;font-weight:700}
+h2{font-size:1.05rem;margin:0 0 12px;font-weight:700}
+.sub{color:var(--mute);margin:0;max-width:68ch}
+main{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:20px;align-items:start;padding-bottom:28px}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+section{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.stick{position:sticky;top:12px}
+@media(max-width:860px){.stick{position:static}}
+textarea{width:100%;min-height:104px;resize:vertical;padding:10px 12px;border:1px solid var(--line);border-radius:6px;font:inherit;color:inherit;background:#fbfcfd}
+textarea:focus,input:focus,button:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
+.hint{font-size:.85rem;color:var(--mute);margin:6px 0 10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button{font:inherit;border-radius:6px;border:1px solid var(--ink);padding:7px 14px;cursor:pointer;background:var(--panel);color:var(--ink)}
+button.primary{background:var(--ink);color:#fff}
+button:disabled{opacity:.5;cursor:default}
+.truth{font-size:.9rem;margin:12px 0 0;color:var(--mute)}
+.warn,.err{font-size:.9rem;margin:10px 0 0;padding:8px 10px;border-radius:6px}
+.warn{background:#fff4dc;color:#6b4a00}.err{background:var(--negbg);color:var(--neg)}
+.models{display:grid;gap:10px;margin-top:14px}
+.mcard{border:1px solid var(--line);border-radius:6px;padding:12px}
+.mcard h3{font-size:.95rem;margin:0}
+.meta{font-size:.82rem;color:var(--mute);margin:2px 0 8px}
+.meta b{color:var(--ink);font-weight:500}
+.empty{font-size:.88rem;color:var(--mute)}
+.verdict{display:inline-block;font-weight:700;padding:2px 10px;border-radius:99px;margin-bottom:8px}
+.Negative{color:var(--neg);background:var(--negbg)}.Neutral{color:var(--neu);background:var(--neubg)}.Positive{color:var(--pos);background:var(--posbg)}
+.bar{display:grid;grid-template-columns:78px 1fr 46px;gap:8px;align-items:center;font-size:.85rem;margin:3px 0}
+.track{height:8px;background:var(--neubg);border-radius:4px;overflow:hidden}
+.fill{height:100%;transition:width .4s}
+.fill.Negative{background:var(--neg)}.fill.Neutral{background:var(--neu)}.fill.Positive{background:var(--pos)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{padding:4px 12px;border-color:var(--line);font-size:.88rem}
+.chip[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+input[type=search]{width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;font:inherit;margin-bottom:10px}
+.item{display:grid;grid-template-columns:1fr auto;gap:6px 12px;padding:11px 0;border-top:1px solid var(--line)}
+.item p{margin:0;grid-column:1/-1;user-select:none}
+.tag{font-size:.8rem;font-weight:500;padding:1px 9px;border-radius:99px;justify-self:start}
+.item button{padding:3px 10px;font-size:.85rem}
+.pager{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:.9rem;color:var(--mute)}
+footer{color:var(--mute);font-size:.85rem;padding-bottom:32px}
+@media(prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Máy đọc cảm xúc bình luận tiếng Việt</h1>
+  <p class="sub">Chọn một bình luận trong tập dữ liệu hoặc tự viết một câu, rồi xem ba mô hình học máy đánh giá câu đó là tiêu cực, trung tính hay tích cực.</p>
+</header>
+<main>
+  <section class="stick" aria-labelledby="t1">
+    <h2 id="t1">Thử mô hình</h2>
+    <textarea id="text" maxlength="500" placeholder="Nhập bình luận tiếng Việt, ví dụ: Bộ phim này hay hơn tôi nghĩ nhiều." aria-describedby="hint"></textarea>
+    <p class="hint" id="hint">Hãy viết bằng tiếng Việt có dấu, theo cách nói bình thường và đúng đắn, không dùng lời lẽ thô tục hay xúc phạm. Độ dài 3–500 ký tự. <span id="count">0/500</span></p>
+    <div class="row">
+      <button class="primary" id="go">Dự đoán cảm xúc</button>
+      <button id="rand">Chọn ngẫu nhiên một câu trong dataset</button>
+    </div>
+    <div id="msg" role="status"></div>
+    <p class="truth" id="truth" hidden></p>
+    <div class="models" id="models" aria-live="polite"></div>
+  </section>
+
+  <section aria-labelledby="t2">
+    <h2 id="t2">Tập dữ liệu (<span id="total">…</span> bình luận)</h2>
+    <div class="filters" id="filters" role="group" aria-label="Lọc theo nhãn"></div>
+    <input type="search" id="q" placeholder="Tìm trong bình luận…" aria-label="Tìm trong bình luận">
+    <div id="list"></div>
+    <div class="pager">
+      <button id="prev">Trang trước</button><span id="pg"></span><button id="next">Trang sau</button>
+    </div>
+  </section>
+</main>
+<footer>
+  <p>Dữ liệu gồm các bình luận do mô hình ngôn ngữ lớn (LLM) tạo ra, nên kết quả chỉ mang tính minh họa và có thể khác với bình luận thật trên mạng. Đã có <span id="subs">0</span> lượt thử.</p>
+</footer>
+
+<script>
+const VN = {Negative:"Tiêu cực", Neutral:"Trung tính", Positive:"Tích cực"};
+const $ = s => document.querySelector(s);
+const st = {page:1, pages:1, label:"", q:"", truth:""};
+let models = [];
+
+async function api(url, opt){
+  const r = await fetch(url, opt);
+  const d = await r.json().catch(() => ({}));
+  if(!r.ok) throw new Error(typeof d.detail === "string" ? d.detail : "Có lỗi xảy ra, vui lòng thử lại.");
+  return d;
+}
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if(cls) e.className = cls; if(txt !== undefined) e.textContent = txt; return e; };
+const pct = x => (x*100).toFixed(1).replace(".", ",") + "%";
+
+function showMsg(text, cls){ const m = $("#msg"); m.innerHTML = ""; if(text) m.append(el("p", cls, text)); }
+
+function renderModels(results){
+  const box = $("#models"); box.innerHTML = "";
+  models.forEach(m => {
+    const c = el("div", "mcard"), r = results && results.find(x => x.id === m.id);
+    c.append(el("h3", "", m.name));
+    const meta = el("p", "meta");
+    meta.innerHTML = "<b>Mô hình:</b> " + m.name + "<br><b>Biểu diễn văn bản:</b> " + m.representation + "<br><b>Độ chính xác trên tập kiểm tra:</b> " + pct(m.metrics.accuracy);
+    c.append(meta);
+    if(!r){ c.append(el("p", "empty", "Chưa có kết quả. Hãy nhập hoặc chọn một câu rồi bấm Dự đoán.")); }
+    else {
+      c.append(el("span", "verdict " + r.label, VN[r.label]));
+      ["Negative","Neutral","Positive"].forEach(k => {
+        const b = el("div", "bar"), t = el("div", "track"), f = el("div", "fill " + k);
+        f.style.width = (r.probs[k]*100) + "%"; t.append(f);
+        b.append(el("span", "", VN[k]), t, el("span", "", pct(r.probs[k]))); c.append(b);
+      });
+    }
+    box.append(c);
+  });
+}
+
+async function predict(){
+  const text = $("#text").value.trim();
+  showMsg("");
+  if(text.length < 3){ showMsg("Hãy nhập một bình luận tiếng Việt (ít nhất 3 ký tự).", "err"); return; }
+  $("#go").disabled = true; $("#go").textContent = "Đang phân tích…";
+  try{
+    const d = await api("/api/predict", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({text})});
+    renderModels(d.results);
+    if(d.known_ratio < 0.3) showMsg("Phần lớn từ trong câu chưa xuất hiện trong dữ liệu huấn luyện, nên kết quả có thể kém tin cậy. Hãy thử viết bằng tiếng Việt có dấu.", "warn");
+    const t = $("#truth");
+    t.hidden = !st.truth; if(st.truth) t.textContent = "Nhãn gốc của câu này trong dataset: " + VN[st.truth] + ".";
+    refreshStats();
+  }catch(e){ showMsg(e.message, "err"); }
+  $("#go").disabled = false; $("#go").textContent = "Dự đoán cảm xúc";
+}
+
+function useSample(s){
+  $("#text").value = s.comment; st.truth = s.label; updateCount();
+  $("#t1").scrollIntoView({behavior:"smooth", block:"start"});
+  predict();
+}
+
+async function loadSamples(){
+  try{
+    const p = new URLSearchParams({page:st.page, label:st.label, q:st.q});
+    const d = await api("/api/samples?" + p);
+    st.pages = d.pages; $("#total").textContent = d.total.toLocaleString("vi-VN");
+    const list = $("#list"); list.innerHTML = "";
+    if(!d.items.length) list.append(el("p", "empty", "Không có bình luận nào khớp. Hãy đổi bộ lọc hoặc từ khóa."));
+    d.items.forEach(s => {
+      const row = el("div", "item"), tag = el("span", "tag " + s.label, VN[s.label]), b = el("button", "", "Thử câu này");
+      b.onclick = () => useSample(s);
+      row.append(tag, b, el("p", "", s.comment)); list.append(row);
+    });
+    $("#pg").textContent = "Trang " + d.page + "/" + d.pages;
+    $("#prev").disabled = d.page <= 1; $("#next").disabled = d.page >= d.pages;
+  }catch(e){ $("#list").textContent = e.message; }
+}
+
+function updateCount(){ $("#count").textContent = $("#text").value.length + "/500"; }
+async function refreshStats(){ try{ const s = await api("/api/stats"); $("#subs").textContent = s.submissions.toLocaleString("vi-VN"); }catch(e){} }
+
+$("#text").addEventListener("input", () => { st.truth = ""; updateCount(); });
+$("#go").onclick = predict;
+$("#rand").onclick = async () => { try{ useSample(await api("/api/samples/random?label=" + st.label)); }catch(e){ showMsg(e.message, "err"); } };
+$("#prev").onclick = () => { if(st.page > 1){ st.page--; loadSamples(); } };
+$("#next").onclick = () => { if(st.page < st.pages){ st.page++; loadSamples(); } };
+let timer; $("#q").addEventListener("input", e => { clearTimeout(timer); timer = setTimeout(() => { st.q = e.target.value; st.page = 1; loadSamples(); }, 350); });
+
+const fbox = $("#filters");
+[["", "Tất cả"], ["Negative", "Tiêu cực"], ["Neutral", "Trung tính"], ["Positive", "Tích cực"]].forEach(([v, t]) => {
+  const b = el("button", "chip", t); b.setAttribute("aria-pressed", v === "");
+  b.onclick = () => { st.label = v; st.page = 1; fbox.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); loadSamples(); };
+  fbox.append(b);
+});
+
+(async () => { models = await api("/api/models"); renderModels(null); loadSamples(); refreshStats(); })();
+</script>
+</body>
+</html>
